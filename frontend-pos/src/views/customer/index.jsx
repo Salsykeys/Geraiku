@@ -105,6 +105,19 @@ export default function CustomerHome() {
     };
 
     const handleAddToCart = (product) => {
+        if (product.stock <= 0) {
+            toast.error("Stok produk tidak mencukupi!");
+            return;
+        }
+
+        const existingItem = cartItems.find(item => item.product_id === product.id);
+        const currentQty = existingItem ? existingItem.qty : 0;
+
+        if (currentQty + 1 > product.stock) {
+            toast.error(`Stok produk tidak mencukupi! Stok saat ini: ${product.stock}`);
+            return;
+        }
+
         addToCart(product);
         toast.success(`${product.title} masuk keranjang!`);
     };
@@ -416,8 +429,9 @@ export default function CustomerHome() {
                                                 <button
                                                     className="btn btn-primary w-100 btn-add-cart mt-3"
                                                     onClick={() => handleAddToCart(product)}
+                                                    disabled={product.stock <= 0}
                                                 >
-                                                    Masukkan Keranjang
+                                                    {product.stock <= 0 ? 'Stok Habis' : 'Masukkan Keranjang'}
                                                 </button>
                                             </div>
                                         </div>
@@ -474,7 +488,18 @@ export default function CustomerHome() {
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M5 12l14 0" /></svg>
                                                         </button>
                                                         <span className="fw-bold px-1" style={{ minWidth: '20px', textAlign: 'center' }}>{item.qty}</span>
-                                                        <button onClick={() => updateQty(item.product_id, item.qty + 1)} className="btn btn-sm btn-icon btn-light rounded-circle border shadow-sm">
+                                                        <button 
+                                                            onClick={() => {
+                                                                const product = products.find(p => p.id === item.product_id);
+                                                                const maxStock = product ? product.stock : item.stock || 999;
+                                                                if (item.qty + 1 > maxStock) {
+                                                                    toast.error(`Stok produk tidak mencukupi! Stok saat ini: ${maxStock}`);
+                                                                    return;
+                                                                }
+                                                                updateQty(item.product_id, item.qty + 1);
+                                                            }} 
+                                                            className="btn btn-sm btn-icon btn-light rounded-circle border shadow-sm"
+                                                        >
                                                             <svg xmlns="http://www.w3.org/2000/svg" className="icon" width="16" height="16" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 5l0 14" /><path d="M5 12l14 0" /></svg>
                                                         </button>
                                                         <div className="ms-auto fw-bold text-dark small">

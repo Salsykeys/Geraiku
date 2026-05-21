@@ -6,6 +6,40 @@ const createSnapTransaction = async (req, res) => {
     try {
         const { amount, customerName, customerEmail, customerPhone, cartItems } = req.body;
 
+        if (!cartItems || cartItems.length === 0) {
+            return res.status(400).json({
+                meta: {
+                    success: false,
+                    message: 'Keranjang belanja kosong'
+                }
+            });
+        }
+
+        // Precheck stock for all cart items
+        for (const item of cartItems) {
+            const product = await prisma.product.findUnique({
+                where: { id: parseInt(item.product_id) }
+            });
+
+            if (!product) {
+                return res.status(404).json({
+                    meta: {
+                        success: false,
+                        message: `Produk dengan ID ${item.product_id} tidak ditemukan`
+                    }
+                });
+            }
+
+            if (parseInt(item.qty) > product.stock) {
+                return res.status(400).json({
+                    meta: {
+                        success: false,
+                        message: `Stok produk '${product.title}' tidak mencukupi. Stok saat ini: ${product.stock}, diminta: ${item.qty}`
+                    }
+                });
+            }
+        }
+
         let snap = new midtransClient.Snap({
             isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
             serverKey: process.env.MIDTRANS_SERVER_KEY,

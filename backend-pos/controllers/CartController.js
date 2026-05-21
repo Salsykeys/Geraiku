@@ -83,13 +83,25 @@ const createCart = async (req, res) => {
         });
 
         if(existingCart) {
+            const requestedQty = parseInt(req.body.qty);
+            const totalQty = existingCart.qty + requestedQty;
+
+            if (totalQty > product.stock) {
+                return res.status(400).send({
+                    meta: {
+                        success: false,
+                        message: `Stok produk '${product.title}' tidak mencukupi. Stok saat ini: ${product.stock}, diminta: ${totalQty}`,
+                    },
+                });
+            }
+
             const updatedCart = await prisma.cart.update({
                 where: {
                     id: existingCart.id,
                 },
                 data: {
-                    qty: existingCart.qty + parseInt(req.body.qty),
-                    price: product.sell_price * (existingCart.qty + parseInt(req.body.qty)),
+                    qty: totalQty,
+                    price: product.sell_price * totalQty,
                     updated_at: new Date(),
                 },
                 include: {
@@ -111,12 +123,23 @@ const createCart = async (req, res) => {
                 data: updatedCart,
             });
         } else {
+            const requestedQty = parseInt(req.body.qty);
+
+            if (requestedQty > product.stock) {
+                return res.status(400).send({
+                    meta: {
+                        success: false,
+                        message: `Stok produk '${product.title}' tidak mencukupi. Stok saat ini: ${product.stock}, diminta: ${requestedQty}`,
+                    },
+                });
+            }
+
             const cart = await prisma.cart.create({
                 data: {
                     cashier_id: req.userId,
                     product_id: parseInt(req.body.product_id),
-                    qty: parseInt(req.body.qty),
-                    price: product.sell_price * parseInt(req.body.qty),
+                    qty: requestedQty,
+                    price: product.sell_price * requestedQty,
                 },
                 include: {
                     product: true,

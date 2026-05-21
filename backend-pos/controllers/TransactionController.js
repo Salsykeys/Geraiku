@@ -22,6 +22,33 @@ const createTransaction = async (req, res) => {
             });
         }
 
+        // Fetch carts first to validate stock and items
+        const carts = await prisma.cart.findMany({
+            where: { cashier_id: cashierId },
+            include: { product: true },
+        });
+
+        if (carts.length === 0) {
+            return res.status(400).send({
+                meta: {
+                    success: false,
+                    message: 'Keranjang belanja kosong',
+                },
+            });
+        }
+
+        // Precheck stock for all cart items to ensure none exceed available stock
+        for (const cart of carts) {
+            if (cart.qty > cart.product.stock) {
+                return res.status(400).send({
+                    meta: {
+                        success: false,
+                        message: `Stok produk '${cart.product.title}' tidak mencukupi. Stok saat ini: ${cart.product.stock}, diminta: ${cart.qty}`,
+                    },
+                });
+            }
+        }
+
         const pointsEarned = customerid ? Math.floor(grandTotal * 0.01) : 0;
         const pointsUsed = parseInt(req.body.points_used) || 0;
 
@@ -50,11 +77,6 @@ const createTransaction = async (req, res) => {
                 }
             });
         }
-
-        const carts = await prisma.cart.findMany({
-            where: { cashier_id: cashierId },
-            include: { product: true },
-        });
 
         for (const cart of carts) {
 

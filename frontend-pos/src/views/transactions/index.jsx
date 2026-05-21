@@ -133,6 +133,19 @@ export default function TransactionsIndex() {
                     if (response.data.data.length > 0) {
                         const product = response.data.data[0];
 
+                        if (product.stock <= 0) {
+                            toast.error("Stok produk tidak mencukupi", {
+                                duration: 4000,
+                                position: "top-right",
+                                style: {
+                                    borderRadius: '10px',
+                                    background: '#333',
+                                    color: '#fff',
+                                },
+                            });
+                            return;
+                        }
+
                         // Add to cart
                         await Api.post('/api/carts', {
                             product_id: product.id,
@@ -153,6 +166,18 @@ export default function TransactionsIndex() {
                                 fetchCarts();
                                 setBarcode("");
                                 fetchProducts();
+                            })
+                            .catch(error => {
+                                const message = error.response?.data?.meta?.message || "Gagal menambahkan ke keranjang";
+                                toast.error(message, {
+                                    duration: 4000,
+                                    position: "top-right",
+                                    style: {
+                                        borderRadius: '10px',
+                                        background: '#333',
+                                        color: '#fff',
+                                    },
+                                });
                             });
                     } else {
                         toast.error("Product not found", {

@@ -27,6 +27,7 @@ export const useCustomerCartStore = create((set) => ({
                 price: product.sell_price,
                 image: product.image,
                 total: qty * product.sell_price,
+                stock: product.stock,
             };
             return {
                 cartItems: [...state.cartItems, newItem]

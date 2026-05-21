@@ -9,9 +9,20 @@ export default function ProductList({ products, fetchCarts }) {
     const token = Cookies.get("token");
 
     const addToCart = (product) => {
+        if (product.stock <= 0) {
+            toast.error("Stok produk tidak mencukupi!", {
+                duration: 4000,
+                position: "top-right",
+                style: {
+                    borderRadius: '10px',
+                    background: '#333',
+                    color: '#fff',
+                },
+            });
+            return;
+        }
 
         if (token) {
-
             Api.defaults.headers.common['Authorization'] = token;
 
             Api.post('/api/carts', {
@@ -20,8 +31,6 @@ export default function ProductList({ products, fetchCarts }) {
                 price: product.sell_price
             })
                 .then(response => {
-
-
                     toast.success(`${response.data.meta.message}`, {
                         duration: 4000,
                         position: "top-right",
@@ -32,12 +41,21 @@ export default function ProductList({ products, fetchCarts }) {
                         },
                     });
 
-
                     fetchCarts();
-
+                })
+                .catch(error => {
+                    const message = error.response?.data?.meta?.message || "Gagal menambahkan ke keranjang";
+                    toast.error(message, {
+                        duration: 4000,
+                        position: "top-right",
+                        style: {
+                            borderRadius: '10px',
+                            background: '#333',
+                            color: '#fff',
+                        },
+                    });
                 });
         }
-
     }
 
     return (
@@ -57,8 +75,12 @@ export default function ProductList({ products, fetchCarts }) {
                                         className="me-2 rounded"
                                     />
                                     <h4 className="mb-0 mt-2">{product.title}</h4>
-                                    <button className="btn btn-primary mt-3 w-100 rounded" onClick={() => addToCart(product)}>
-                                        Add to Cart
+                                    <button 
+                                        className="btn btn-primary mt-3 w-100 rounded" 
+                                        onClick={() => addToCart(product)}
+                                        disabled={product.stock <= 0}
+                                    >
+                                        {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                                     </button>
                                 </div>
                             </div>
