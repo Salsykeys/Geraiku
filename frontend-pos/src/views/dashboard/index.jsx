@@ -270,7 +270,13 @@ export default function Dashboard() {
                                                         <div className="flex-fill">
                                                             <h4 className="mb-0">{product.title}</h4>
                                                             <hr className="mb-1 mt-1" />
-                                                            <p className="text-danger mb-0">Stock: {product.stock}</p>
+                                                            {product.stock === 0 ? (
+                                                                <span className="badge bg-danger">Stok produk kosong</span>
+                                                            ) : product.stock < 5 ? (
+                                                                <span className="badge bg-warning text-white">Stok produk menipis ({product.stock})</span>
+                                                            ) : (
+                                                                <span className="badge bg-secondary-lt">Stok: {product.stock}</span>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>

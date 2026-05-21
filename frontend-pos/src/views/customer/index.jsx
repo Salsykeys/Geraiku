@@ -412,6 +412,11 @@ export default function CustomerHome() {
                                                     className="product-image"
                                                     alt={product.title}
                                                 />
+                                                {product.stock === 0 ? (
+                                                    <span className="badge bg-danger position-absolute top-0 end-0 m-3">Stok produk kosong</span>
+                                                ) : product.stock < 5 ? (
+                                                    <span className="badge bg-warning position-absolute top-0 end-0 m-3 text-white">Stok produk menipis</span>
+                                                ) : null}
                                             </div>
                                             <div className="card-body p-3">
                                                 <div className="text-muted small mb-1">{product.category?.name}</div>
@@ -431,7 +436,7 @@ export default function CustomerHome() {
                                                     onClick={() => handleAddToCart(product)}
                                                     disabled={product.stock <= 0}
                                                 >
-                                                    {product.stock <= 0 ? 'Stok Habis' : 'Masukkan Keranjang'}
+                                                    {product.stock <= 0 ? 'Stok produk kosong' : 'Masukkan Keranjang'}
                                                 </button>
                                             </div>
                                         </div>

@@ -75,12 +75,23 @@ export default function ProductList({ products, fetchCarts }) {
                                         className="me-2 rounded"
                                     />
                                     <h4 className="mb-0 mt-2">{product.title}</h4>
+
+                                    <div className="mt-2">
+                                        {product.stock === 0 ? (
+                                            <span className="badge bg-danger">Stok produk kosong</span>
+                                        ) : product.stock < 5 ? (
+                                            <span className="badge bg-warning text-white">Stok produk menipis ({product.stock})</span>
+                                        ) : (
+                                            <span className="badge bg-secondary-lt">Stok: {product.stock}</span>
+                                        )}
+                                    </div>
+
                                     <button 
                                         className="btn btn-primary mt-3 w-100 rounded" 
                                         onClick={() => addToCart(product)}
                                         disabled={product.stock <= 0}
                                     >
-                                        {product.stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                                        {product.stock <= 0 ? 'Stok produk kosong' : 'Add to Cart'}
                                     </button>
                                 </div>
                             </div>
