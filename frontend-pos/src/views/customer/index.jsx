@@ -248,6 +248,12 @@ export default function CustomerHome() {
                 }
                 .floating-hero {
                     animation: floatHero 6s ease-in-out infinite;
+                    max-height: 220px;
+                }
+                @media (min-width: 992px) {
+                    .floating-hero {
+                        max-height: 400px;
+                    }
                 }
                 @keyframes floatHero {
                     0%, 100% { transform: translateY(0px) rotate(0deg); }
@@ -335,6 +341,24 @@ export default function CustomerHome() {
                                 <p className="fs-2 mb-4 opacity-90">
                                     Kebutuhan dapur, snack favorit, hingga minuman segar siap kamu bawa pulang. Berkualitas, Lengkap, dan Terpercaya.
                                 </p>
+
+                                {/* Search Bar on Mobile */}
+                                <div className="d-block d-lg-none mb-4">
+                                    <form onSubmit={handleSearch}>
+                                        <div className="search-pill d-flex align-items-center bg-white shadow-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="icon text-muted me-2" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                                            <input
+                                                type="text"
+                                                className="form-control border-0 bg-transparent shadow-none text-dark"
+                                                placeholder="Cari kebutuhan harianmu di sini..."
+                                                value={search}
+                                                onChange={(e) => setSearch(e.target.value)}
+                                            />
+                                            <button type="submit" className="btn btn-primary btn-sm rounded-pill px-3">Cari</button>
+                                        </div>
+                                    </form>
+                                </div>
+
                                 <div className="d-flex gap-3">
                                     <div className="bg-white rounded-4 px-4 py-3 shadow-lg transform-hover">
                                         <div className="h2 fw-bold mb-0 text-primary">Diskon 10%</div>
@@ -346,8 +370,8 @@ export default function CustomerHome() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-5 text-center d-none d-lg-block">
-                                <img src="/images/hero_promo.png" alt="Promo Geraiku" className="img-fluid floating-hero" style={{ maxHeight: '400px', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.2))', borderRadius: '35px' }} />
+                            <div className="col-lg-5 text-center mt-5 mt-lg-0">
+                                <img src="/images/hero_promo.png" alt="Promo Geraiku" className="img-fluid floating-hero" style={{ filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.2))', borderRadius: '35px' }} />
                             </div>
                         </div>
                     </section>
